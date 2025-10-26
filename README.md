@@ -1,6 +1,12 @@
 <div align="center"><img src="assets/logo.png" width="350"></div>
 <img src="assets/demo.png" >
 
+
+## License and Attribution
+This repository is based on [YOLOX](https://github.com/Megvii-BaseDetection/YOLOX),  
+licensed under the [Apache License 2.0](LICENSE).  
+Modifications © 2025 CleanTrak Inc.
+
 ## Introduction
 YOLOX is an anchor-free version of YOLO, with a simpler design but better performance! It aims to bridge the gap between research and industrial communities.
 For more details, please refer to our [report on Arxiv](https://arxiv.org/abs/2107.08430).
