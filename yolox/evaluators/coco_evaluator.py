@@ -6,6 +6,7 @@ import contextlib
 import io
 import itertools
 import json
+import os
 import tempfile
 import time
 from collections import ChainMap, defaultdict
@@ -287,9 +288,10 @@ class COCOEvaluator:
                 json.dump(data_dict, open("./yolox_testdev_2017.json", "w"))
                 cocoDt = cocoGt.loadRes("./yolox_testdev_2017.json")
             else:
-                _, tmp = tempfile.mkstemp()
-                json.dump(data_dict, open(tmp, "w"))
-                cocoDt = cocoGt.loadRes(tmp)
+                with tempfile.NamedTemporaryFile(mode="w+", suffix=".json", delete=True) as tmp:
+                    json.dump(data_dict, tmp)
+                    tmp.flush()  # ensure all content is written to disk
+                    cocoDt = cocoGt.loadRes(tmp.name)
             try:
                 from yolox.layers import COCOeval_opt as COCOeval
             except ImportError:

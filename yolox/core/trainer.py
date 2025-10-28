@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) Megvii, Inc. and its affiliates.
+# Copyright (c) 2025 CleanTrak Inc.
 
 import datetime
 import os
@@ -357,6 +358,8 @@ class Trainer:
             )
 
         update_best_ckpt = ap50_95 > self.best_ap
+        if update_best_ckpt:
+            print(f"Will update best checkpoint mAP[0.5:0.95]: {round(self.best_ap), 4} -> {round(ap50_95, 4)}")
         self.best_ap = max(self.best_ap, ap50_95)
 
         if self.rank == 0:

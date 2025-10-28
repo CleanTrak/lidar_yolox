@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 # Copyright (c) Megvii, Inc. and its affiliates.
+# Copyright (c) 2025 CleanTrak Inc.
 import copy
 import os
 
@@ -10,6 +11,7 @@ from pycocotools.coco import COCO
 
 from ..dataloading import get_yolox_datadir
 from .datasets_wrapper import CacheDataset, cache_read_img
+import hashlib
 
 
 def remove_useless_info(coco):
@@ -19,7 +21,7 @@ def remove_useless_info(coco):
     """
     if isinstance(coco, COCO):
         dataset = coco.dataset
-        dataset.pop("info", None)
+        # dataset.pop("info", None)
         dataset.pop("licenses", None)
         for img in dataset["images"]:
             img.pop("license", None)
@@ -38,6 +40,7 @@ class COCODataset(CacheDataset):
 
     def __init__(
         self,
+        cleantrak_logic=False,
         data_dir=None,
         json_file="instances_train2017.json",
         name="train2017",
@@ -55,12 +58,19 @@ class COCODataset(CacheDataset):
             img_size (int): target image size after pre-processing
             preproc: data augmentation strategy
         """
-        if data_dir is None:
-            data_dir = os.path.join(get_yolox_datadir(), "COCO")
+        self.cleantrak_logic = cleantrak_logic
+        if not self.cleantrak_logic:
+            if data_dir is None:
+                data_dir = os.path.join(get_yolox_datadir(), "COCO")
         self.data_dir = data_dir
         self.json_file = json_file
 
-        self.coco = COCO(os.path.join(self.data_dir, "annotations", self.json_file))
+        if not self.cleantrak_logic:
+            self.coco = COCO(os.path.join(self.data_dir, "annotations", self.json_file))
+        else:
+            self.coco = COCO(self.json_file)
+            name = ""
+
         remove_useless_info(self.coco)
         self.ids = self.coco.getImgIds()
         self.num_imgs = len(self.ids)
@@ -73,11 +83,17 @@ class COCODataset(CacheDataset):
         self.annotations = self._load_coco_annotations()
 
         path_filename = [os.path.join(name, anno[3]) for anno in self.annotations]
+        if not self.cleantrak_logic:
+            cache_dir_name=f"cache_{name}"
+        else:
+            hash_ = hashlib.sha256(os.path.abspath(self.data_dir).encode()).hexdigest()
+            cache_dir_name = f"cache_{hash_[:6]}"
+
         super().__init__(
             input_dimension=img_size,
             num_imgs=self.num_imgs,
             data_dir=data_dir,
-            cache_dir_name=f"cache_{name}",
+            cache_dir_name=cache_dir_name,
             path_filename=path_filename,
             cache=cache,
             cache_type=cache_type
@@ -147,6 +163,8 @@ class COCODataset(CacheDataset):
 
         img = cv2.imread(img_file)
         assert img is not None, f"file named {img_file} not found"
+        if self.cleantrak_logic:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         return img
 

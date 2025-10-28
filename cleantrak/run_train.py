@@ -101,6 +101,9 @@ def make_parser():
     )
     # Added by CleanTrak
     parser.add_argument(
+        "--max_epoch", required=True, type=int, help="Training epoch number at which training will be stopped"
+    )
+    parser.add_argument(
         "--seed", default=0, type=int, help="Seed for deterministic training"
     )
     parser.add_argument("--train_images", type=str, required=True,
@@ -142,6 +145,8 @@ if __name__ == "__main__":
     exp.train_ann = args.train_labels
     exp.val_images = args.val_images
     exp.val_ann = args.val_labels
+
+    exp.max_epoch = args.max_epoch
 
     exp.seed = args.seed
     print(f"seed:   {exp.seed}")

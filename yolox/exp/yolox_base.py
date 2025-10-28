@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # Copyright (c) Megvii Inc. All rights reserved.
+# Copyright (c) 2025 CleanTrak Inc.
 
 import os
 import random
@@ -16,7 +17,7 @@ __all__ = ["Exp", "check_exp_value"]
 class Exp(BaseExp):
     def __init__(self):
         super().__init__()
-
+        self.cleantrak_logic = False
         # ---------------- model config ---------------- #
         # detect classes number of model
         self.num_classes = 80
@@ -139,9 +140,17 @@ class Exp(BaseExp):
         """
         from yolox.data import COCODataset, TrainTransform
 
+        if self.cleantrak_logic:
+            data_dir = self.train_images
+            json_file = self.train_ann
+        else:
+            data_dir = self.data_dir
+            json_file=self.train_ann
+
         return COCODataset(
-            data_dir=self.data_dir,
-            json_file=self.train_ann,
+            cleantrak_logic=self.cleantrak_logic,
+            data_dir=data_dir,
+            json_file=json_file,
             img_size=self.input_size,
             preproc=TrainTransform(
                 max_labels=50,
@@ -300,10 +309,18 @@ class Exp(BaseExp):
         from yolox.data import COCODataset, ValTransform
         testdev = kwargs.get("testdev", False)
         legacy = kwargs.get("legacy", False)
+        if self.cleantrak_logic:
+            data_dir = self.val_images
+            json_file = self.val_ann
+        else:
+            data_dir = self.data_dir
+            json_file=self.val_ann if not testdev else self.test_ann,
+
 
         return COCODataset(
-            data_dir=self.data_dir,
-            json_file=self.val_ann if not testdev else self.test_ann,
+            cleantrak_logic=self.cleantrak_logic,
+            data_dir=data_dir,
+            json_file=json_file,
             name="val2017" if not testdev else "test2017",
             img_size=self.test_size,
             preproc=ValTransform(legacy=legacy),

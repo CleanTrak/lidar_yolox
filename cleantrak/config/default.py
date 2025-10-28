@@ -7,11 +7,13 @@ from exps.default.yolox_tiny import Exp as BaseExp
 class Exp(BaseExp):
     def __init__(self):
         super().__init__()
-        # cleantrak_logic: Uses RGB and treats self.data_dir as path to images, and self.train_ann, self.val_ann as paths to .json annotations
+        # cleantrak_logic: Uses RGB and treats uses self.train_images as path to images,
+        # and self.train_ann, self.val_ann as paths to .json annotations, the same for validation set
         self.cleantrak_logic = True
         self.test_ann = None
         self.eval_interval = 10
         self.num_classes = None
         self.hsv_prob = 0.0
+        self.mosaic_prob = 0.0
         self.enable_mixup = False
-        # self.data_num_workers = 1
+        self.no_aug_epochs = self.max_epoch // 30 + 5
