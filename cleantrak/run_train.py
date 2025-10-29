@@ -124,7 +124,7 @@ if __name__ == "__main__":
     args = make_parser().parse_args()
     if args.exp_file is None:
         args.exp_file = f"{os.path.dirname(__file__)}/config/default.py"
-    exp: yolox.exp.Exp = get_exp(args.exp_file)
+    exp = get_exp(args.exp_file)
     if args.val_images is None:
         args.val_images = args.train_images
     if args.val_labels is None:

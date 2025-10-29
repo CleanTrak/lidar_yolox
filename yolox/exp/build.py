@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 # Copyright (c) Megvii Inc. All rights reserved.
+# Modifications copyright (c) 2025 CleanTrak Inc.
 
 import importlib
 import os
 import sys
+
+import yolox.exp
 
 
 def get_exp_by_file(exp_file):
@@ -24,7 +27,7 @@ def get_exp_by_name(exp_name):
     return exp_object
 
 
-def get_exp(exp_file=None, exp_name=None):
+def get_exp(exp_file=None, exp_name=None) -> "yolox.exp.Exp":
     """
     get Exp object by file or name. If exp_file and exp_name
     are both provided, get Exp by exp_file.
