@@ -10,10 +10,12 @@ class Exp(BaseExp):
         # cleantrak_logic: Uses RGB and treats uses self.train_images as path to images,
         # and self.train_ann, self.val_ann as paths to .json annotations, the same for validation set
         self.cleantrak_logic = True
-        self.test_ann = None
-        self.eval_interval = 10
-        self.num_classes = None
+        self.test_size = (416, 416)
+        self.no_aug_epochs = self.max_epoch // 30 + 5
+        self.eval_interval = 5
+        self.print_interval = self.eval_interval
         self.hsv_prob = 0.0
         self.mosaic_prob = 0.0
         self.enable_mixup = False
-        self.no_aug_epochs = self.max_epoch // 30 + 5
+        self.test_ann = None
+        self.num_classes = None

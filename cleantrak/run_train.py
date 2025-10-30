@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 # Copyright (c) Megvii, Inc. and its affiliates.
 # Copyright (c) 2025 CleanTrak Inc.
-
+import json
+import shutil
 import sys
 import os
+sys.path.append(f"{os.path.dirname(__file__)}/..")
 
 from pycocotools.coco import COCO
 
+from cleantrak.coco_utils import get_labels_list_from_coco
 from folders import ensure_folder
 
-sys.path.append(f"{os.path.dirname(__file__)}/..")
 
 
 
@@ -136,7 +138,8 @@ if __name__ == "__main__":
     print(f"Val labels:   {args.val_labels}")
 
     train_coco = COCO(args.train_labels)
-    n_classes = len(train_coco.cats)
+    labels = get_labels_list_from_coco(train_coco)
+    n_classes = len(labels)
     exp.num_classes = n_classes
 
     exp.data_dir = None
@@ -149,13 +152,17 @@ if __name__ == "__main__":
     exp.max_epoch = args.max_epoch
 
     exp.seed = args.seed
-    print(f"seed:   {exp.seed}")
+    print(f"seed: {exp.seed}")
     # exp.merge(args.opts)
     check_exp_value(exp)
 
-    exp.output_dir = args.output_dir
     ensure_folder(args.output_dir)
     print(f"Output dir: {args.output_dir}")
+    exp.output_dir = f"{args.output_dir}/artifacts"
+    ensure_folder(exp.output_dir)
+
+    with open(f"{args.output_dir}/labels.json", "w") as f:
+        json.dump(labels, f, indent=4)
 
     args.experiment_name = ""
 
@@ -175,3 +182,6 @@ if __name__ == "__main__":
         dist_url=dist_url,
         args=(exp, args),
     )
+
+    shutil.copy(f"{exp.output_dir}/best_ckpt.pth", args.output_dir)
+    print("Training done")
