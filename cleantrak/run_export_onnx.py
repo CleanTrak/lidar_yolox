@@ -5,10 +5,10 @@
 import json
 import os
 import sys
+sys.path.append(f"{os.path.dirname(__file__)}/..")
 
 from onnx.external_data_helper import uses_external_data
 
-sys.path.append(f"{os.path.dirname(__file__)}/..")
 
 from cleantrak.yolox_utils import get_num_classes_of_yolox_checkpoint
 
