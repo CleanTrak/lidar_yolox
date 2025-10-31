@@ -17,7 +17,6 @@ __all__ = ["Exp", "check_exp_value"]
 class Exp(BaseExp):
     def __init__(self):
         super().__init__()
-        self.cleantrak_logic = False
         # ---------------- model config ---------------- #
         # detect classes number of model
         self.num_classes = 80

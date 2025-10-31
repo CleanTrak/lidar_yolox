@@ -45,14 +45,14 @@ def draw_objects(image: np.ndarray, objects2d: list[Object2D]):
 
     for obj in objects2d:
         bb = obj.bbox
-        x1 = int(round(bb.x0)); y1 = int(round(bb.y0))
-        x2 = int(round(bb.x1)); y2 = int(round(bb.y1))
+        x1 = round(bb.x0); y1 = round(bb.y0)
+        x2 = round(bb.x1); y2 = round(bb.y1)
 
         # clamp to image bounds and skip invalid boxes
         x1 = max(0, min(x1, w - 1)); x2 = max(0, min(x2, w - 1))
         y1 = max(0, min(y1, h - 1)); y2 = max(0, min(y2, h - 1))
-        if x2 <= x1 or y2 <= y1:
-            continue
+        # if x2 <= x1 or y2 <= y1:
+        #     continue
 
         color_rgb = palette_rgb[label2idx[obj.label] % len(palette_rgb)]
 

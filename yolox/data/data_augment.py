@@ -15,6 +15,7 @@ import random
 import cv2
 import numpy as np
 
+from cleantrak.yolox_utils import yolox_preprocess
 from yolox.utils import xyxy2cxcywh
 
 
@@ -169,7 +170,7 @@ class TrainTransform:
         labels = targets[:, 4].copy()
         if len(boxes) == 0:
             targets = np.zeros((self.max_labels, 5), dtype=np.float32)
-            image, r_o = preproc(image, input_dim)
+            image, r_o = yolox_preprocess(image, input_dim)
             return image, targets
 
         image_o = image.copy()
@@ -184,7 +185,7 @@ class TrainTransform:
             augment_hsv(image)
         image_t, boxes = _mirror(image, boxes, self.flip_prob)
         height, width, _ = image_t.shape
-        image_t, r_ = preproc(image_t, input_dim)
+        image_t, r_ = yolox_preprocess(image_t, input_dim)
         # boxes [xyxy] 2 [cx,cy,w,h]
         boxes = xyxy2cxcywh(boxes)
         boxes *= r_
@@ -194,7 +195,7 @@ class TrainTransform:
         labels_t = labels[mask_b]
 
         if len(boxes_t) == 0:
-            image_t, r_o = preproc(image_o, input_dim)
+            image_t, r_o = yolox_preprocess(image_o, input_dim)
             boxes_o *= r_o
             boxes_t = boxes_o
             labels_t = labels_o
@@ -234,8 +235,9 @@ class ValTransform:
 
     # assume input is cv2 img for now
     def __call__(self, img, res, input_size):
-        img, _ = preproc(img, input_size, self.swap)
+        img, _ = yolox_preprocess(img, input_size, self.swap)
         if self.legacy:
+            assert False, f"Should not be here"
             img = img[::-1, :, :].copy()
             img /= 255.0
             img -= np.array([0.485, 0.456, 0.406]).reshape(3, 1, 1)

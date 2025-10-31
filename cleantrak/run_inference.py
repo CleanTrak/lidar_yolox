@@ -26,6 +26,7 @@ def main():
         return 1
 
     img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+    # img_rgb = img_bgr
 
     detector = OnnxObjectDetector(args.model)
     objects = detector.detect_objects(img_rgb)
